@@ -1,4 +1,4 @@
-name: Hugo CI/CD
+name: Hugo Build
 
 on:
   push:
@@ -6,25 +6,24 @@ on:
       - main
 
 jobs:
-  build-deploy:
+  build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          submodules: true
-          fetch-depth: 0
+        uses: actions/checkout@v3
 
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
         with:
-          hugo-version: 'latest'
+          hugo-version: '0.152.2'
+          extended: true
 
-      - name: Build
-        run: hugo --minify
+      - name: Install Dart Sass
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y npm
+          sudo npm install -g sass
 
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
+      - name: Build Site
+        run: hugo
